@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact name="ModelCreator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ModelCreator_jar</output-path>
+    <root id="root">
+      <element id="archive" name="ModelCreator.jar">
+        <element id="module-output" name="ModelCreator" />
+      </element>
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="mysql-connector-java-5.1.41-bin" />
+      </element>
+    </root>
+  </artifact>
+</component>
