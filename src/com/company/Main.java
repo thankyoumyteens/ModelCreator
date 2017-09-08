@@ -1,9 +1,7 @@
 package com.company;
 
-import com.company.util.MySqlHelper;
-
-import java.io.IOException;
-import java.sql.SQLException;
+import com.company.factory.CreatorFactory;
+import com.company.util.Creator;
 import java.util.Scanner;
 
 public class Main {
@@ -13,40 +11,45 @@ public class Main {
 
         String url;
         String dbName;
-        String tableName;
 
-        System.out.println("注意:输入1表示使用默认值");
+        System.out.println("注意:不输入表示使用默认值");
 
-        System.out.println("请输入数据库地址(例:127.0.0.1:3306)");
+        System.out.println("请输入数据库地址(127.0.0.1:3306)");
         url = scanner.nextLine();
-        if ("1".equals(url)) {
+        if ("".equals(url)) {
             url = "127.0.0.1";
         }
-        System.out.println("请输入数据库用户名");
+        System.out.println("请输入数据库用户名(root)");
         String user = scanner.nextLine();
-        if ("1".equals(user)) {
+        if ("".equals(user)) {
             user = "root";
         }
         System.out.println("请输入数据库密码");
         String password = scanner.nextLine();
-        if ("1".equals(password)) {
+        if ("".equals(password)) {
             password = "";
         }
+        System.out.println("请输入数据库类别: 1:MySql,2:Oracle,3:SqlServer");
+        String dbType = scanner.nextLine();
+        if ("".equals(dbType)) {
+            dbType = "1";
+        }
+//        System.out.println("请输入编程语言: 1:Java,2:C#,3:php");
+//        String language = scanner.nextLine();
+//        if ("".equals(language)) {
+//            language = "1";
+//        }
 
         dbName = getDbName(scanner);
 
-        while (true) {
-            tableName = getTableName(scanner);
+        Creator creator = CreatorFactory.getCreatorInstance(dbType, url, dbName, user, password);
 
-            try {
-                new MySqlHelper(url, dbName, tableName, user, password);
-                System.out.println("完成(文件目录:./entities)");
-            } catch (SQLException e) {
-                System.out.println("数据库相关信息打错了吧");
-            } catch (ClassNotFoundException e) {
-                System.out.println("找不到mysql驱动");
-            } catch (IOException e) {
-                System.out.println("磁盘不存在或者没有写入权限");
+        System.out.println("正在执行, 请稍等...");
+
+        while (true) {
+            if (creator != null) {
+                creator.createEntityClass();
+                System.out.println("完成");
             }
             System.out.println("继续? y/n");
             String q = scanner.nextLine();
@@ -68,7 +71,7 @@ public class Main {
         while (true) {
             System.out.println("请输入数据库名称");
             dbName = scanner.nextLine();
-            if ("1".equals(dbName)) {
+            if ("".equals(dbName)) {
                 System.out.println("数据库名你还想默认!!重来");
             } else {
                 break;
@@ -82,7 +85,7 @@ public class Main {
         while (true) {
             System.out.println("请输入表名");
             tableName = scanner.nextLine();
-            if ("1".equals(tableName)) {
+            if ("".equals(tableName)) {
                 System.out.println("表名你还想默认!!重来");
             } else {
                 break;
