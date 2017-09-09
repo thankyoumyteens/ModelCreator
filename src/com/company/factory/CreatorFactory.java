@@ -16,11 +16,11 @@ public class CreatorFactory {
 
         switch (type) {
             case 1: // mysql
-                return new MySqlCreator(url, dbName, user, password);
+                return new MySqlCreator(url + ":3306", dbName, user, password);
             case 2: // oracle
-                return new OracleCreator(url, dbName, user, password);
+                return new OracleCreator(url + ":1521", dbName, user, password);
             case 3: // sqlserver
-                return new SqlServerCreator(url, dbName, user, password);
+                return new SqlServerCreator(url + "", dbName, user, password);
             default:
                 return null;
         }

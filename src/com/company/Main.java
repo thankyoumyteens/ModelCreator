@@ -15,41 +15,41 @@ public class Main {
         String url;
         String dbName;
 
-        System.out.println("注意:不输入表示使用默认值");
+        while (true) {
+            System.out.println("注意:不输入表示使用默认值");
 
-        System.out.println("请输入数据库地址(127.0.0.1:3306)");
-        url = scanner.nextLine();
-        if ("".equals(url)) {
-            url = "127.0.0.1";
-        }
-        System.out.println("请输入数据库用户名(root)");
-        String user = scanner.nextLine();
-        if ("".equals(user)) {
-            user = "root";
-        }
-        System.out.println("请输入数据库密码");
-        String password = scanner.nextLine();
-        if ("".equals(password)) {
-            password = "";
-        }
-        System.out.println("请输入数据库类别: 1:MySql,2:Oracle,3:SqlServer");
-        String dbType = scanner.nextLine();
-        if ("".equals(dbType)) {
-            dbType = "1";
-        }
+            System.out.println("请输入数据库地址:端口(localhost:port)");
+            url = scanner.nextLine();
+            if ("".equals(url)) {
+                url = "localhost";
+            }
+            System.out.println("请输入数据库用户名(root)");
+            String user = scanner.nextLine();
+            if ("".equals(user)) {
+                user = "root";
+            }
+            System.out.println("请输入数据库密码");
+            String password = scanner.nextLine();
+            if ("".equals(password)) {
+                password = "";
+            }
+            System.out.println("请输入数据库类别: 1:MySql,2:Oracle,3:SqlServer");
+            String dbType = scanner.nextLine();
+            if ("".equals(dbType)) {
+                dbType = "1";
+            }
 //        System.out.println("请输入编程语言: 1:Java,2:C#,3:php");
 //        String language = scanner.nextLine();
 //        if ("".equals(language)) {
 //            language = "1";
 //        }
 
-        dbName = getDbName(scanner);
+            dbName = getDbName(scanner);
 
-        Creator creator = CreatorFactory.getCreatorInstance(dbType, url, dbName, user, password);
+            Creator creator = CreatorFactory.getCreatorInstance(dbType, url, dbName, user, password);
 
-        System.out.println("正在执行, 请稍等...");
+            System.out.println("正在执行, 请稍等...");
 
-        while (true) {
             if (creator != null) {
                 try {
                     creator.createEntityClass();
@@ -62,10 +62,8 @@ public class Main {
             String q = scanner.nextLine();
             if ("n".equals(q)) {
                 break;
-            }
-            else if ("y".equals(q)) {
-            }
-            else {
+            } else if ("y".equals(q)) {
+            } else {
                 System.out.println(q + " 是啥? 算了, 继续");
             }
         }
