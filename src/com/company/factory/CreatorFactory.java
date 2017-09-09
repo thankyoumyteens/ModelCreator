@@ -13,7 +13,11 @@ public class CreatorFactory {
         int type = Integer.parseInt(typeStr);
 
         switch (type) {
-            case 1:
+            case 1: // mysql
+                return new MySqlCreator(url, dbName, user, password);
+            case 2: // oracle
+                return new MySqlCreator(url, dbName, user, password);
+            case 3: // sqlserver
                 return new MySqlCreator(url, dbName, user, password);
             default:
                 return null;

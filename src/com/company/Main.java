@@ -2,6 +2,9 @@ package com.company;
 
 import com.company.factory.CreatorFactory;
 import com.company.util.Creator;
+
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -48,7 +51,15 @@ public class Main {
 
         while (true) {
             if (creator != null) {
-                creator.createEntityClass();
+                try {
+                    creator.createEntityClass();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("完成");
             }
             System.out.println("继续? y/n");

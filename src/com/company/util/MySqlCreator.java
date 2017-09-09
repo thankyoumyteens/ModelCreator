@@ -1,57 +1,35 @@
 package com.company.util;
 
+import com.company.model.ColumnInfo;
+
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Admin on 2017/9/8.
  */
 public class MySqlCreator extends Creator {
+
+
     public MySqlCreator(String url, String database, String username, String password) {
-        super(url, database, username, password);
+        super(url, database, username, password, "com.mysql.jdbc.Driver");
     }
 
     @Override
-    public void createEntityClass() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:MySQL://" +
-                            this.url + "/" + this.database +
-                            "?characterEncoding=utf8&useSSL=true",
-                    this.username, this.password);
+    public void createEntityClass() throws SQLException, ClassNotFoundException, IOException {
+        initConnection();
 
-            String queryAllTables = "select table_name from information_schema.tables" +
-                    " where table_schema=? and table_type='base table'";
-            PreparedStatement preparedStatement = con.prepareStatement(queryAllTables);
-            preparedStatement.setString(1, this.database);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        String queryAllTables = "select table_name from information_schema.tables" +
+                " where table_schema=? and table_type='base table'";
 
-            List<String> tableNameList = new ArrayList<>();
+        List<String> tableNameList = getTableNameList(queryAllTables, true);
 
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("table_name");
-                tableNameList.add(tableName);
-            }
+        String queryAllColumns = "SELECT column_name,data_type FROM information_schema.columns WHERE table_name=?";
 
-            resultSet.close();
-            preparedStatement.close();
-
-            String queryAllColumns = "select column_name from information_schema.columns" +
-                    " where table_schema=? and table_name=?";
-
-            for (String tableName : tableNameList) {
-                EntityClassMaker.makeEntityByTableName(con, tableName);
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String tableName : tableNameList) {
+            List<ColumnInfo> columnInfoList = getColumnInfoList(queryAllColumns, tableName);
+            EntityClassMaker.makeEntityByTableName(tableName, columnInfoList);
         }
     }
 }

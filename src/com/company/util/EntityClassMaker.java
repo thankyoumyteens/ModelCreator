@@ -1,10 +1,11 @@
 package com.company.util;
 
+import com.company.model.ColumnInfo;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,40 +15,26 @@ public class EntityClassMaker {
 
     /**
      * 创建一张表的实体类文件
-     * @param connection
+     * @param columnInfoList
      * @param tableName
      * @throws SQLException
      * @throws IOException
      */
-    public static void makeEntityByTableName(Connection connection, String tableName)
+    public static void makeEntityByTableName(String tableName, List<ColumnInfo> columnInfoList)
             throws SQLException, IOException {
         boolean isDateTime = false;
 
-        String sql = "select * from " + tableName;
+        for (ColumnInfo columnInfo : columnInfoList) {
+            if ("datetime".equals(columnInfo.getColumnType())) {
+                isDateTime = true;
+            }
+        }
 
         // java命名规范
         tableName = convertToJavaStyle(tableName);
         tableName = tableName.substring(0, 1).toUpperCase() + tableName.substring(1);
 
-        List<String> columnNameList = new ArrayList<>();
-        List<String> columnTypeList = new ArrayList<>();
-
-        PreparedStatement preparedStatement;
-        preparedStatement = connection.prepareStatement(sql);
-        ResultSetMetaData resultSetMetaData = preparedStatement.getMetaData();
-        int columnCount = resultSetMetaData.getColumnCount();
-        for (int i = 0; i < columnCount; i++) {
-            String columnName = resultSetMetaData.getColumnName(i + 1);
-            String columnTypeName = resultSetMetaData.getColumnTypeName(i + 1);
-
-            if (columnTypeName.equalsIgnoreCase("datetime")) {
-                isDateTime = true;
-            }
-            columnNameList.add(columnName);
-            columnTypeList.add(columnTypeName);
-        }
-
-        String content = makeEntityContent(tableName, isDateTime, columnNameList, columnTypeList);
+        String content = makeEntityContent(tableName, isDateTime, columnInfoList);
 
         String dir = "entities";
         String fileName = tableName + ".java";
@@ -72,6 +59,7 @@ public class EntityClassMaker {
      * @return 转换后的名称
      */
     private static String convertToJavaStyle(String string) {
+        string = string.toLowerCase();
         if (string.contains("_")) {
             String[] strings = string.split("_");
             StringBuilder stringBuilder = new StringBuilder(strings[0]);
@@ -89,11 +77,10 @@ public class EntityClassMaker {
      * 生成实体类的文件内容
      * @param tableName
      * @param isDateTime
-     * @param columnNameList
-     * @param columnTypeList
+     * @param columnInfoList
      * @return
      */
-    private static String makeEntityContent(String tableName, boolean isDateTime, List<String> columnNameList, List<String> columnTypeList) {
+    private static String makeEntityContent(String tableName, boolean isDateTime, List<ColumnInfo> columnInfoList) {
         StringBuilder sb = new StringBuilder();
         sb.append("package entities;\r\n");
         //判断是否导入工具包
@@ -106,16 +93,17 @@ public class EntityClassMaker {
         sb.append("public class ").append(tableName).append(" {");
         sb.append("\r\n");
         // 属性
-        for (String column : columnNameList) {
-            column = convertToJavaStyle(column);
-            sb.append("\tprivate ").append(sqlType2JavaType(column)).append(" ").append(column).append(";");
+        for (ColumnInfo columnInfo : columnInfoList) {
+            String column = convertToJavaStyle(columnInfo.getColumnName());
+            String type = convertToJavaStyle(columnInfo.getColumnType());
+            sb.append("\tprivate ").append(sqlType2JavaType(type)).append(" ").append(column).append(";");
             sb.append("\r\n");
         }
         sb.append("\r\n");
         // getter和setter
-        for (int i = 0; i < columnNameList.size(); i++) {
-            String name = columnNameList.get(i);
-            String type = columnTypeList.get(i);
+        for (ColumnInfo columnInfo : columnInfoList) {
+            String name = columnInfo.getColumnName();
+            String type = columnInfo.getColumnType();
             name = convertToJavaStyle(name);
 
             sb.append("\tpublic void set").append(firstLetterToUpperCase(name)).append("(").append(sqlType2JavaType(type)).append(" ").append(name).append(") {\r\n");
@@ -141,6 +129,11 @@ public class EntityClassMaker {
         return new String(ch);
     }
 
+    /**
+     * 返回和数据库类型对应的java类型
+     * @param sqlType
+     * @return
+     */
     private static String sqlType2JavaType(String sqlType) {
 
         if (sqlType.equalsIgnoreCase("bit")) {

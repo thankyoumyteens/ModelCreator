@@ -19,5 +19,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="ojdbc7_g" level="project" />
   </component>
 </module>
