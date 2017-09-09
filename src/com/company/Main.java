@@ -53,11 +53,7 @@ public class Main {
             if (creator != null) {
                 try {
                     creator.createEntityClass();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                } catch (SQLException | ClassNotFoundException | IOException e) {
                     e.printStackTrace();
                 }
                 System.out.println("完成");

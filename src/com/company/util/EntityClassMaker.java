@@ -15,6 +15,7 @@ public class EntityClassMaker {
 
     /**
      * 创建一张表的实体类文件
+     *
      * @param columnInfoList
      * @param tableName
      * @throws SQLException
@@ -25,7 +26,7 @@ public class EntityClassMaker {
         boolean isDateTime = false;
 
         for (ColumnInfo columnInfo : columnInfoList) {
-            if ("datetime".equals(columnInfo.getColumnType())) {
+            if (columnInfo.getColumnType().contains("date")) {
                 isDateTime = true;
             }
         }
@@ -55,6 +56,7 @@ public class EntityClassMaker {
 
     /**
      * 将数据库中有下划线的名称转换为驼峰式名称
+     *
      * @param string 数据库中的字段
      * @return 转换后的名称
      */
@@ -75,6 +77,7 @@ public class EntityClassMaker {
 
     /**
      * 生成实体类的文件内容
+     *
      * @param tableName
      * @param isDateTime
      * @param columnInfoList
@@ -131,37 +134,47 @@ public class EntityClassMaker {
 
     /**
      * 返回和数据库类型对应的java类型
+     *
      * @param sqlType
      * @return
      */
     private static String sqlType2JavaType(String sqlType) {
+        sqlType = sqlType.toLowerCase();
 
-        if (sqlType.equalsIgnoreCase("bit")) {
-            return "boolean";
-        } else if (sqlType.equalsIgnoreCase("tinyint")) {
-            return "byte";
-        } else if (sqlType.equalsIgnoreCase("smallint")) {
-            return "short";
-        } else if (sqlType.equalsIgnoreCase("int")) {
-            return "int";
-        } else if (sqlType.equalsIgnoreCase("bigint")) {
-            return "long";
-        } else if (sqlType.equalsIgnoreCase("float")) {
-            return "float";
-        } else if (sqlType.equalsIgnoreCase("decimal") || sqlType.equalsIgnoreCase("numeric")
-                || sqlType.equalsIgnoreCase("real") || sqlType.equalsIgnoreCase("money")
-                || sqlType.equalsIgnoreCase("smallmoney")) {
-            return "double";
-        } else if (sqlType.equalsIgnoreCase("varchar") || sqlType.equalsIgnoreCase("char")
-                || sqlType.equalsIgnoreCase("nvarchar") || sqlType.equalsIgnoreCase("nchar")
-                || sqlType.equalsIgnoreCase("text")) {
-            return "String";
-        } else if (sqlType.equalsIgnoreCase("datetime")) {
-            return "Date";
-        } else if (sqlType.equalsIgnoreCase("image")) {
-            return "Blod";
+        switch (sqlType) {
+            case "bit":
+                return  "boolean";
+            case "tinyint":
+                return  "byte";
+            case "smallint":
+                return  "short";
+            case "int":
+                return  "int";
+            case "bigint":
+            case "number":
+                return  "long";
+            case "float":
+                return  "float";
+            case "decimal":
+            case "numeric":
+            case "real":
+            case "money":
+            case "smallmoney":
+                return  "double";
+            case "varchar":
+            case "varchar2":
+            case "char":
+            case "nvarchar":
+            case "nchar":
+            case "text":
+                return  "String";
+            case "date":
+            case "datetime":
+                return  "Date";
+            case "image":
+                return  "Blod";
+            default:
+                return  "String";
         }
-
-        return "String";
     }
 }

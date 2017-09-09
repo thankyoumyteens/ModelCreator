@@ -3,6 +3,8 @@ package com.company.factory;
 import com.company.enums.DatabaseType;
 import com.company.util.Creator;
 import com.company.util.MySqlCreator;
+import com.company.util.OracleCreator;
+import com.company.util.SqlServerCreator;
 
 /**
  * Created by Admin on 2017/9/8.
@@ -16,9 +18,9 @@ public class CreatorFactory {
             case 1: // mysql
                 return new MySqlCreator(url, dbName, user, password);
             case 2: // oracle
-                return new MySqlCreator(url, dbName, user, password);
+                return new OracleCreator(url, dbName, user, password);
             case 3: // sqlserver
-                return new MySqlCreator(url, dbName, user, password);
+                return new SqlServerCreator(url, dbName, user, password);
             default:
                 return null;
         }
